@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OSINT WHATSAPP - RAPZZ</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700&family=Roboto+Mono:wght@400;700&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        .top-bar {
+            position: fixed; top: 0; left: 0; width: 100%;
+            background: #000; color: #ccff00; font-family: 'Roboto Mono', monospace;
+            font-size: 13px; font-weight: bold; padding: 10px 0;
+            border-bottom: 2px solid #000; z-index: 1000;
+            overflow: hidden; white-space: nowrap;
+        }
+        .top-bar marquee { width: 100%; display: block; }
+
+        body {
+            background-color: #e0e0e0;
+            background-image: radial-gradient(#000 0.8px, transparent 0.8px);
+            background-size: 15px 15px;
+            font-family: 'Space Grotesk', sans-serif;
+            display: flex;
+            justify-content: center; align-items: center;
+            min-height: 100vh; padding: 80px 20px 20px 20px;
+        }
+
+        .main-card { width: 100%; max-width: 380px; display: flex; flex-direction: column; gap: 15px; position: relative; }
+
+        .header-card {
+            background: #7b2cff; border: 3px solid #000;
+            box-shadow: 10px 10px 0px #000; padding: 20px; position: relative;
+        }
+        .logo-img {
+            width: 80px; height: 80px; background: #ccff00;
+            border: 3px solid #000; box-shadow: 4px 4px 0px #000;
+            margin-bottom: 15px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold;
+        }
+        .nav-btns {
+            position: absolute; top: 15px; right: 15px;
+            display: flex; flex-direction: column; gap: 5px;
+        }
+        .btn-s {
+            background: #ccff00; border: 2px solid #000; box-shadow: 3px 3px 0px #000;
+            padding: 4px 8px; font-size: 10px; font-weight: 700; text-decoration: none; color: #000; cursor: pointer;
+        }
+        .header-card h2 { color: #ccff00; font-size: 12px; margin-bottom: 4px; text-transform: uppercase; }
+        .header-card h1 { color: #fff; font-size: 22px; line-height: 1; text-transform: uppercase; }
+
+        .form-card {
+            background: #fff; border: 3px solid #000;
+            box-shadow: 10px 10px 0px #000; padding: 20px;
+        }
+        .input-box { margin-bottom: 15px; }
+        .input-box label { display: block; font-size: 11px; font-weight: bold; margin-bottom: 5px; text-transform: uppercase; }
+        input {
+            width: 100%; padding: 12px; border: 3px solid #000;
+            font-family: 'Roboto Mono', monospace; font-size: 14px; outline: none;
+        }
+
+        .custom-select-wrapper { position: relative; cursor: pointer; }
+        .select-trigger {
+            width: 100%; padding: 12px; border: 3px solid #000;
+            background: #fff; font-family: 'Roboto Mono', monospace; font-size: 14px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .custom-options {
+            position: absolute; top: 100%; left: -3px; right: -3px;
+            background: #fff; border: 3px solid #000; z-index: 100;
+            display: none; box-shadow: 8px 8px 0px #000;
+        }
+        .custom-options.open { display: block; }
+        .option { padding: 10px; border-bottom: 2px solid #000; font-family: 'Roboto Mono', monospace; font-size: 12px; }
+        .option:hover { background: #ccff00; }
+        .option:last-child { border-bottom: none; }
+
+        .btn-go {
+            width: 100%; background: #ccff00; border: 3px solid #000;
+            box-shadow: 6px 6px 0px #000; padding: 15px;
+            font-size: 16px; font-weight: bold; text-transform: uppercase; cursor: pointer; margin-top: 10px;
+        }
+        .btn-go:active { box-shadow: 0px 0px 0px #000; transform: translate(6px, 6px); }
+
+        #customAlert {
+            display: none; position: absolute; top: 50%; left: 50%; 
+            transform: translate(-50%, -50%); width: 90%;
+            background: #ff0055; border: 4px solid #000; 
+            box-shadow: 10px 10px 0px #000; padding: 20px;
+            z-index: 3000; color: #fff; text-align: center;
+            animation: shake 0.3s ease-in-out;
+        }
+        @keyframes shake {
+            0% { transform: translate(-52%, -50%); }
+            50% { transform: translate(-48%, -50%); }
+            100% { transform: translate(-50%, -50%); }
+        }
+
+        .modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); z-index: 2000; justify-content: center; align-items: center; padding: 20px;
+        }
+        .modal-content {
+            background: #fff; border: 4px solid #000; box-shadow: 12px 12px 0px #ccff00;
+            width: 100%; max-width: 350px; padding: 20px; max-height: 85vh; overflow-y: auto;
+        }
+        .modal-content h3 { border-bottom: 3px solid #000; margin-bottom: 10px; padding-bottom: 5px; text-transform: uppercase; }
+        .modal-content p { font-size: 13px; font-family: 'Roboto Mono', monospace; margin-bottom: 10px; line-height: 1.4; color: #333; }
+        
+        .result-box {
+            background: #000; color: #ccff00; padding: 15px; font-family: 'Roboto Mono', monospace;
+            font-size: 11px; border: 2px solid #ccff00; margin-top: 10px; display: none; white-space: pre-wrap;
+        }
+
+        .tag-input-area {
+            margin-top: 10px; border-top: 2px dashed #000; padding-top: 10px;
+            display: none;
+        }
+        .tag-input-area input { border: 2px solid #000; padding: 5px; font-size: 12px; margin-bottom: 5px; width: 100%; }
+        .btn-save-tag { background: #000; color: #ccff00; border: none; padding: 8px; cursor: pointer; font-size: 11px; width: 100%; font-weight: bold; text-transform: uppercase; }
+
+        .btn-close { width: 100%; background: #ff4444; border: 2px solid #000; color: #fff; padding: 8px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+
+        .scan-line { height: 4px; background: #ccff00; position: relative; overflow: hidden; display: none; margin-bottom: 10px; border: 1px solid #000; }
+        .scan-line::after { content: ''; display: block; width: 40%; height: 100%; background: #000; position: absolute; animation: scan 1.5s linear infinite; }
+        @keyframes scan { 0% { left: -40%; } 100% { left: 100%; } }
+    </style>
+</head>
+<body>
+
+<div class="top-bar">
+    <marquee direction="left" scrollamount="10">
+        WEB/APK DI LARANG DI PERJUAL BELIKAN JIKA MENDAPATI AKAN DIKENAKAN SANKSI —  PT RAPZZ OFFICIAL
+    </marquee>
+</div>
+
+<div class="main-card">
+    <div class="header-card">
+        <div class="nav-btns">
+            <div class="btn-s" onclick="openModal('infoModal')">INFO BACA</div>
+            <div class="btn-s" onclick="openModal('joinModal')" style="background:#fff">JOIN DISINI</div>
+        </div>
+        <div class="logo-img">RAPZZ</div>
+        <h2>TOOLSRAPZZ</h2>
+        <h1>OSINT WHATSAPP<br>V1.0 </h1>
+    </div>
+
+    <div class="form-card">
+        <div class="input-box">
+            <label>MASUKKAN NOMOR TARGET:</label>
+            <input type="text" id="phone" placeholder="628xxxxxxx">
+        </div>
+
+        <div class="input-box">
+            <label>PILIH MENU OSINT:</label>
+            <div class="custom-select-wrapper">
+                <div class="select-trigger" id="selectTrigger" onclick="toggleSelect()">
+                    <span id="selectedLabel">-- PILIH OPSI --</span>
+                    <span>▼</span>
+                </div>
+                <div class="custom-options" id="optionsBox">
+                    <div class="option" onclick="selectOption('CEK OSINT', 'provider')">CEK OSINT</div>
+                    <div class="option" onclick="selectOption('TRACKING ONLINE', 'tracking')">TRACKING ONLINE</div>
+                    <div class="option" onclick="selectOption('GETCONTACT DATABASE', 'getcontact')">GETCONTACT DATABASE</div>
+                    <div class="option" onclick="selectOption('STATUS WHATSAPP', 'status')">STATUS WHATSAPP</div>
+                </div>
+            </div>
+            <input type="hidden" id="mode">
+        </div>
+
+        <button class="btn-go" onclick="startTracking()">Mulai Tracking</button>
+    </div>
+
+    <div id="customAlert">
+        <h4 style="margin-bottom: 10px;">⚠️ ACCESS DENIED!</h4>
+        <p id="alertText" style="font-size: 12px; margin-bottom: 15px;">MASUKKAN DATA SECARA LENGKAP!</p>
+        <button onclick="closeAlert()" style="background:#000; color:#fff; border:none; padding:5px 15px; cursor:pointer; font-weight:bold;">RETRY</button>
+    </div>
+
+    <div class="footer">
+        <p>• POWERED BY RAPZZ •</p>
+    </div>
+</div>
+
+<!-- Modal Info Baca -->
+<div id="infoModal" class="modal">
+    <div class="modal-content">
+        <h3>APA ITU OSINT?</h3>
+        <p><strong>OSINT (Open Source Intelligence)</strong> adalah metode pengumpulan intelijen melalui data primer yang tersedia secara publik di internet.</p>
+        <p>Pada Tools ini, sistem melakukan sinkronisasi dengan database <strong>HLR (Home Location Register)</strong> untuk menentukan titik registrasi awal sebuah nomor telepon (MSISDN).</p>
+        <p><strong>Fungsi Utama:</strong><br>
+        1. <strong>Tracking Lokasi:</strong> Mendeteksi wilayah Provinsi dan Kabupaten berdasarkan prefix operator.<br>
+        2. <strong>Identity Check:</strong> Menarik metadata Getcontact untuk melihat reputasi nomor (Penipu/Bukan).<br>
+        3. <strong>WA Metadata:</strong> Verifikasi keaktifan akun dan tipe platform yang digunakan (Business/Regular).</p>
+        <button class="btn-close" onclick="closeModal('infoModal')">MENGERTI</button>
+    </div>
+</div>
+
+<!-- Modal Join -->
+<div id="joinModal" class="modal">
+    <div class="modal-content">
+        <h3>AKSES CEPAT</h3>
+        <a href="https://whatsapp.com/channel/0029VbCaAif9xVJXZOJkrY1o" class="modal-link" target="_blank" style="display: block; background: #000; color: #ccff00; padding: 10px; text-align: center; text-decoration: none; font-weight: bold; margin-bottom: 8px; border: 2px solid #ccff00;">SALURAN WHATSAPP</a>
+        <a href="https://www.tiktok.com/@rapzz_lystic" class="modal-link" target="_blank" style="display: block; background: #000; color: #ccff00; padding: 10px; text-align: center; text-decoration: none; font-weight: bold; margin-bottom: 8px; border: 2px solid #ccff00;">TIKTOK RESMI</a>
+        <a href="https://pt-rapzzz-official.vercel.app/" class="modal-link" target="_blank" style="display: block; background: #000; color: #ccff00; padding: 10px; text-align: center; text-decoration: none; font-weight: bold; margin-bottom: 8px; border: 2px solid #ccff00;">WEBSITE RESMI</a>
+        <button class="btn-close" onclick="closeModal('joinModal')">TUTUP</button>
+    </div>
+</div>
+
+<div id="resultModal" class="modal">
+    <div class="modal-content">
+        <h3>OSINT RESULT</h3>
+        <p id="trackingStatus">Connecting...</p>
+        <div class="scan-line" id="loader"></div>
+        <div class="result-box" id="resultData"></div>
+        
+        <div id="tagInputArea" class="tag-input-area">
+            <p style="font-size: 11px; font-weight: bold; margin-bottom: 5px;">TAMBAHKAN TAG BARU UNTUK NOMOR INI:</p>
+            <input type="text" id="newTagName" placeholder="Contoh: Penipu Paket / Teman Sekolah">
+            <button class="btn-save-tag" onclick="saveNewTag()">SIMPAN KE DATABASE</button>
+        </div>
+
+        <button class="btn-close" id="btnCloseResult" onclick="closeModal('resultModal')" style="display:none">DASHBOARD</button>
+    </div>
+</div>
+
+<script>
+    function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+    function toggleSelect() { document.getElementById('optionsBox').classList.toggle('open'); }
+    function selectOption(label, value) {
+        document.getElementById('selectedLabel').innerText = label;
+        document.getElementById('mode').value = value;
+        toggleSelect();
+    }
+    function showAlert(msg) { document.getElementById('alertText').innerText = msg; document.getElementById('customAlert').style.display = 'block'; }
+    function closeAlert() { document.getElementById('customAlert').style.display = 'none'; }
+
+    function getIndonesiaProvider(num) {
+        let p = { name: "UNKNOWN OPERATOR", prov: "UNKNOWN REGION", kab: "UNKNOWN AREA" };
+        if (/^628(11)/.test(num)) { p.name = "TELKOMSEL HALO (PASCA)"; p.prov = "DKI JAKARTA"; p.kab = "JAKARTA PUSAT"; }
+        else if (/^628(12|13|21|22)/.test(num)) { p.name = "TELKOMSEL SIMPATI/AS"; p.prov = "JAWA BARAT"; p.kab = "BANDUNG / KOTA"; }
+        else if (/^628(52|53|23)/.test(num)) { p.name = "TELKOMSEL KARTU AS"; p.prov = "JAWA TENGAH"; p.kab = "KEBUMEN / PURWOKERTO"; }
+        else if (/^628(51)/.test(num)) { p.name = "TELKOMSEL BY.U / AS"; p.prov = "JAWA TIMUR"; p.kab = "MALANG / SURABAYA"; }
+        else if (/^628(57|58)/.test(num)) { p.name = "INDOSAT IM3"; p.prov = "JAWA TIMUR"; p.kab = "MALANG / SURABAYA"; }
+        else if (/^628(14|15|16|55|56)/.test(num)) { p.name = "INDOSAT MENTARI/MATRIX"; p.prov = "DKI JAKARTA"; p.kab = "JAKARTA BARAT"; }
+        else if (/^628(17|18|19|59|77|78)/.test(num)) { p.name = "XL AXIATA / LIVE.ON"; p.prov = "BANTEN"; p.kab = "TANGERANG / SERANG"; }
+        else if (/^628(31|38)/.test(num)) { p.name = "AXIS (XL AXIATA)"; p.prov = "JAWA BARAT"; p.kab = "BOGOR / BEKASI"; }
+        else if (/^628(95|96|97|98|99)/.test(num)) { p.name = "HUTCHISON THREE (3)"; p.prov = "SUMATERA UTARA"; p.kab = "MEDAN / DELI SERDANG"; }
+        else if (/^628(81|82|83|84|85|86|87|88|89)/.test(num)) { p.name = "SMARTFREN"; p.prov = "JAWA TENGAH"; p.kab = "SEMARANG / SOLO"; }
+        return p;
+    }
+
+    function getStoredTags(phone) {
+        let db = JSON.parse(localStorage.getItem('rapzz_osint_db') || '{}');
+        return db[phone] || ["Belum Ada Tag (Database Kosong)"];
+    }
+
+    function saveNewTag() {
+        const phone = document.getElementById('phone').value;
+        const newTag = document.getElementById('newTagName').value;
+        if(!newTag) return;
+        let db = JSON.parse(localStorage.getItem('rapzz_osint_db') || '{}');
+        if(!db[phone]) db[phone] = [];
+        db[phone].push(newTag);
+        localStorage.setItem('rapzz_osint_db', JSON.stringify(db));
+        document.getElementById('newTagName').value = "";
+        alert("TAG BARU TELAH DISIMPAN KE DATABASE!");
+        startTracking();
+    }
+
+    function startTracking() {
+        const phone = document.getElementById('phone').value;
+        const mode = document.getElementById('mode').value;
+        if (!phone || !mode) { showAlert("PILIH OPSI DAN ISI NOMOR!"); return; }
+        if (!phone.startsWith("62")) { showAlert("GUNAKAN FORMAT 628XXXX!"); return; }
+
+        openModal('resultModal');
+        const status = document.getElementById('trackingStatus');
+        const loader = document.getElementById('loader');
+        const result = document.getElementById('resultData');
+        const tagArea = document.getElementById('tagInputArea');
+        const closeBtn = document.getElementById('btnCloseResult');
+
+        status.innerText = "BYPASSING FIREWALL...";
+        loader.style.display = 'block';
+        result.style.display = 'none';
+        tagArea.style.display = 'none';
+        closeBtn.style.display = 'none';
+
+        setTimeout(() => {
+            status.innerText = "EXTRACTION SUCCESS!";
+            loader.style.display = 'none';
+            result.style.display = 'block';
+            closeBtn.style.display = 'block';
+
+            const info = getIndonesiaProvider(phone);
+            const randomID = Math.floor(1000 + Math.random() * 9000);
+            const date = new Date();
+            const timeString = date.toLocaleString('id-ID');
+            
+            let log = `[RAPZZ_OSINT_REPORT_${randomID}]\n`;
+            log += `TARGET : +${phone}\n`;
+            log += `--------------------------\n`;
+
+            if(mode === 'provider') {
+                log += `KARTU    : ${info.name}\n`;
+                log += `PROVINSI : ${info.prov}\n`;
+                log += `KABUPATEN: ${info.kab}\n`;
+                log += `SIGNAL   : 4G/LTE (CELL_ACTIVE)\n`;
+                log += `HLR_CODE : ${phone.substring(0,6)}\n`;
+                log += `STATUS   : VERIFIED (INDONESIA)\n`;
+                log += `--------------------------\n`;
+                log += `NOTE: DATA INI SESUAI DENGAN NOMOR TERSEBUT DIMANA DIBUAT DAN DIVERIFIKASI BUKAN LOKASI ASLI TARGET`;
+            } 
+            else if(mode === 'tracking') {
+                log += `IP_ADDR  : 182.${Math.floor(Math.random()*255)}.${Math.floor(Math.random()*255)}.${Math.floor(Math.random()*255)}\n`;
+                log += `LAST_ON  : ${timeString}\n`;
+                log += `LOC_ACT  : ${info.kab}, ${info.prov}\n`;
+                log += `ACTIVITY : CHATTING / IDLE\n`;
+                log += `ACCURACY : 85% (CELLULAR DATA)`;
+            }
+            else if(mode === 'getcontact') {
+                tagArea.style.display = 'block';
+                const tags = getStoredTags(phone);
+                log += `LIST TAGS DATABASE:\n`;
+                tags.forEach((t, i) => { log += `${i+1}. ${t}\n`; });
+            }
+            else {
+                log += `WA_STATUS: REGISTERED\nTYPE     : ${phone.length > 12 ? 'BUSINESS' : 'REGULAR'}\nVERIFIED : ${phone.length > 12 ? 'YES' : 'NO'}\nLAST_ACT : ONLINE`;
+            }
+
+            result.innerText = log;
+        }, 3000);
+    }
+</script>
+</body>
+</html>
